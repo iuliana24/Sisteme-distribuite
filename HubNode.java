@@ -65,5 +65,5 @@ public class HubNode {
     public static void main(String[] args) {
         HubNode hub = new HubNode();
         hub.start();
-    }
+}
 }
