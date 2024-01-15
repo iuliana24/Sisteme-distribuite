@@ -1,18 +1,15 @@
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class PeripherialNode2 {
+public class PeripheralNode2 {
     private Socket socket;
     private PrintWriter out;
     private Scanner in;
     private Scanner userInputScanner;
 
-    public PeripherialNode2() {
+    public PeripheralNode2() {
         userInputScanner = new Scanner(System.in);
 
         try {
@@ -42,16 +39,16 @@ public class PeripherialNode2 {
 
             switch (option) {
                 case 1:
-                    sendRequest("Cautare");
+                    sendSearchRequest();
                     break;
                 case 2:
-                    sendRequest("Adaugare");
+                    sendAddRequest();
                     break;
                 case 3:
-                    sendRequest("Modificare");
+                    sendUpdateRequest();
                     break;
                 case 4:
-                    sendRequest("Stergere");
+                    sendDeleteRequest();
                     break;
                 case 0:
                     System.out.println("Deconectare de la HubNode.");
@@ -78,14 +75,73 @@ public class PeripherialNode2 {
         System.out.print("Introduceți numărul acțiunii: ");
     }
 
-    private void sendRequest(String action) {
-        System.out.print("Introduceți termenul pentru " + action + ": ");
+    private void sendRequest(String action, String term, String explanation) {
+        // Trimite cererea la HubNode
+        out.println(action + ":" + term + ":" + explanation);
+    }
+
+    private void sendSearchRequest() {
+        System.out.print("Introduceți termenul pentru Cautare: ");
         String term = userInputScanner.nextLine();
 
-        out.println(action + ":" + term);
+        // Trimite cererea de căutare la HubNode
+        out.println("Cautare:" + term);
+    }
+
+    private void sendAddRequest() {
+        System.out.print("Introduceți termenul pentru Adaugare: ");
+        String term = userInputScanner.nextLine();
+
+        System.out.print("Introduceți explicația pentru termenul '" + term + "': ");
+        String explanation = userInputScanner.nextLine().trim();
+
+        // Trimite cererea de adăugare la HubNode
+        sendRequest("Adaugare", term, explanation);
+    }
+
+    private void sendUpdateRequest() {
+        System.out.print("Introduceți termenul pe care doriți să-l modificați: ");
+        String term = userInputScanner.nextLine();
+
+        System.out.print("Introduceți noua explicație pentru termenul '" + term + "': ");
+        String newExplanation = userInputScanner.nextLine().trim();
+
+        // Trimite cererea de actualizare la HubNode
+        out.println("Modificare:" + term + ":" + newExplanation);
+    }
+
+    private void sendDeleteRequest() {
+        System.out.print("Introduceți termenul pe care doriți să-l ștergeți: ");
+        String term = userInputScanner.nextLine();
+
+        // Verificăm dacă utilizatorul dorește să șteargă termenul
+        System.out.print("Sunteți sigur că doriți să ștergeți termenul '" + term + "'? (Da/Nu): ");
+        String confirmation = userInputScanner.nextLine().trim().toLowerCase();
+
+        if (confirmation.equals("da")) {
+            // Trimite cererea de ștergere la HubNode
+            out.println("Stergere:" + term);
+        } else {
+            System.out.println("Ștergerea termenului '" + term + "' a fost anulată.");
+        }
+    }
+
+    private void sendDisconnectRequest() {
+        // Trimite cererea de deconectare la HubNode
+        out.println("Deconectare");
+    }
+
+    private void disconnect() {
+        System.out.println("Deconectare de la HubNode.");
+        sendDisconnectRequest();
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
-        new PeripherialNode2();
+        new PeripheralNode2();
     }
 }
