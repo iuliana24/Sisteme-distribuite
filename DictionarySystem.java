@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 class DictionarySystem {
     private final Map<String, String> keyValueMap;
@@ -223,6 +225,15 @@ class DictionarySystem {
                 changeLogs.add(logEntry);
             }
         }
+    }
+
+    private void addLog(String logMessage) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String formattedTimestamp = timestamp.format(formatter);
+        String logEntry = "[" + formattedTimestamp + "] " + logMessage;
+        changeLogs.add(logEntry);
     }
 
     public void printLogs() {
